@@ -43,34 +43,63 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
   local SizeX = RecursiveData.SizeX or 0
   local SizeY = RecursiveData.SizeY or 0
 
-  local Direction = RecursiveData.Direction or "X"
+  local CurrentX = StartX
+  local CurrentY = StartY
+  
+  local Direction = "X"
 
-  local CurrentCell = OriginalGrid[StartY][StartX]
+  local CurrentCell = OriginalGrid[CurrentY][CurrentX]
   local NeighboringCell = nil
 
   if StartX + 1 > GridX then
-    if OriginalGrid[StartY+1] then
-      StartY = StartY+1
-      print("Going down")
+    if OriginalGrid[CurrentY+1] then
+      CurrentY = StartY+1
+      Direction = "Y"
+     -- print("Moved Y")
     else
-      print("Could not move down because Y"..StartY+1 .." does not exist")
+      print("Y"..CurrentY+1 .." does not exist")
       return
     end
-  elseif StartY + 1 > GridY then
+  elseif CurrentY + 1 > GridY then
     print("Reached end of grid")
     return RecursiveData
-  else
-    print("Moved over x")
   end
 
   if Direction == "X" then
-    NeighboringCell = OriginalGrid[StartY][StartX+1]
+    NeighboringCell = OriginalGrid[CurrentY][CurrentX+1]
+   -- print("Moved X")
   else
     NeighboringCell = OriginalGrid[StartY+1][StartX]
+    --print("Moved Y")
   end
 
-  print(CellsAreSame(CurrentCell, NeighboringCell))
-end
-OriginalGrid[4][5] = {255,254,255}
+  print(CurrentY, CurrentX)
 
-GreedyMesh(4,4)
+  if not CurrentCell or not NeighboringCell then
+    print("Not Exist")
+    return RecursiveData
+  end
+
+  local RecurseData = {
+          ["SizeY"] = SizeY,
+          ["SizeX"] = SizeX
+        }
+  
+  if CellsAreSame(CurrentCell, NeighboringCell) then
+    if Direction == "X" then
+      SizeX = SizeX + 1
+    else
+      SizeY = SizeY + 1
+    end
+    
+    return GreedyMesh(CurrentY, CurrentX, RecurseData)
+  else
+    print("Not Same")
+    return RecurseData
+  end
+end
+--OriginalGrid[4][5] = {255,254,255}
+
+local Data = GreedyMesh(1,5)
+
+print(Data.SizeY, Data.SizeX)
