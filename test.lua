@@ -27,6 +27,16 @@ end
 local OriginalGrid = MakeGrid(5,5)
 local Visited = {}
 
+local function CellsAreSame(cell1, cell2) 
+  if #cell1 ~= #cell2 then return false end
+  
+  for Index, _ in ipairs(cell1) do
+    if cell1[Index] ~= cell2[Index] then return false end
+  end 
+
+  return true
+end
+
 local function GreedyMesh(StartY, StartX, RecursiveData)
   RecursiveData = RecursiveData or {}
   
@@ -58,6 +68,9 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
   else
     NeighboringCell = OriginalGrid[StartY+1][StartX]
   end
+
+  print(CellsAreSame(CurrentCell, NeighboringCell))
 end
+OriginalGrid[4][5] = {255,254,255}
 
 GreedyMesh(4,4)
