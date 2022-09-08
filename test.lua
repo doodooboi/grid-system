@@ -38,10 +38,11 @@ local function CellsAreSame(cell1, cell2)
 end
 
 local function GreedyMesh(StartY, StartX, RecursiveData)
+  
   RecursiveData = RecursiveData or {}
   
-  local SizeX = RecursiveData.SizeX or 0
-  local SizeY = RecursiveData.SizeY or 0
+  local SizeX = RecursiveData.SizeX or 1
+  local SizeY = RecursiveData.SizeY or 1
 
   local CurrentX = StartX
   local CurrentY = StartY
@@ -58,7 +59,7 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
      -- print("Moved Y")
     else
       print("Y"..CurrentY+1 .." does not exist")
-      return
+      return RecursiveData
     end
   elseif CurrentY + 1 > GridY then
     print("Reached end of grid")
@@ -79,11 +80,6 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
     print("Not Exist")
     return RecursiveData
   end
-
-  local RecurseData = {
-          ["SizeY"] = SizeY,
-          ["SizeX"] = SizeX
-        }
   
   if CellsAreSame(CurrentCell, NeighboringCell) then
     if Direction == "X" then
@@ -91,11 +87,16 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
     else
       SizeY = SizeY + 1
     end
+
+    local RecurseData = {
+     ["SizeY"] = SizeY,
+     ["SizeX"] = SizeX
+    }
     
     return GreedyMesh(CurrentY, CurrentX, RecurseData)
   else
     print("Not Same")
-    return RecurseData
+    return RecursiveData
   end
 end
 --OriginalGrid[4][5] = {255,254,255}
