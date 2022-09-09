@@ -124,6 +124,11 @@ local RecurseData = {
 			["OriginalX"] = RecursiveData.OriginalX,
       ["OriginalY"] = RecursiveData.OriginalY
 	}
+
+  if not RecursiveData.OriginalX then
+			RecurseData["OriginalX"] = StartX
+      RecurseData["OriginalY"] = StartY
+		end
   
 	if CellsSame then
 		if Direction == "X" then
@@ -145,12 +150,11 @@ local RecurseData = {
     elseif Direction == 'Y' then
       RecurseData.YLimit = CurrentY - 1
     end
+
+    for CY = RecurseData.OriginalY, RecurseData.YLimit or MaxY do
+        ClearVisitedLayer(CY, RecurseData.XLimit + 1, GridX)
+    end
 	end
-		
-		if not RecursiveData.OriginalX then
-			RecurseData["OriginalX"] = StartX
-      RecurseData["OriginalY"] = StartY
-		end
 
     if CellsSame then
       return GreedyMesh(CurrentY, CurrentX, RecurseData)
