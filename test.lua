@@ -115,6 +115,11 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 
   local CellsSame = CellsAreSame(CurrentCell, NeighboringCell)
 
+  if CurrentCell[1] == 0 then
+    print(CurrentCell[1], StartY, StartX)
+    print(NeighboringCell[1], CurrentY, CurrentX)
+  end
+
 local RecurseData = {
 			["SizeY"] = SizeY,
 			["SizeX"] = SizeX,
@@ -124,11 +129,6 @@ local RecurseData = {
 			["OriginalX"] = RecursiveData.OriginalX,
       ["OriginalY"] = RecursiveData.OriginalY
 	}
-
-  if not RecursiveData.OriginalX then
-			RecurseData["OriginalX"] = StartX
-      RecurseData["OriginalY"] = StartY
-		end
   
 	if CellsSame then
 		if Direction == "X" then
@@ -145,21 +145,23 @@ local RecurseData = {
     RecurseData.SizeX = SizeX
     RecurseData.SizeY = SizeY
 	else
-    if Direction == "X" then
-      RecurseData.XLimit = CurrentX - 1
-    elseif Direction == 'Y' then
+    --if Direction == "X" then
+    --  RecurseData.XLimit = CurrentX - 1
+    --elseif Direction == 'Y' then
       RecurseData.YLimit = CurrentY - 1
-    end
-
-    for CY = RecurseData.OriginalY, RecurseData.YLimit or MaxY do
-        ClearVisitedLayer(CY, RecurseData.XLimit + 1, GridX)
-    end
+   -- end
 	end
+		
+		if not RecursiveData.OriginalX then
+			RecurseData["OriginalX"] = StartX
+      RecurseData["OriginalY"] = StartY
+		end
 
     if CellsSame then
       return GreedyMesh(CurrentY, CurrentX, RecurseData)
     else
-      return GreedyMesh(CurrentY, CurrentX-1, RecurseData)
+     -- return GreedyMesh(CurrentY, CurrentX-1, RecurseData)
+    return RecurseData
     end
 end
 
