@@ -65,7 +65,7 @@ local function NextYLayerSafe(StartY, StartX, Cell1)
     return true
 end
 
-local function ClearVisitedXLayer(YLayer, StartX, EndX)
+local function ClearVisitedLayer(YLayer, StartX, EndX)
   for CurrentX = StartX, EndX do
     Visited[YLayer][EndX] = false
   end
@@ -105,80 +105,59 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 		end
 	elseif CurrentY + 1 > MaxY and (CurrentX + 1 > MaxX) then
 		return RecursiveData
-	end
-
-	if Direction == "X" then
-		CurrentX = CurrentX + 1
-  elseif Direction == "Y" then
-    
+  else
+    CurrentX = CurrentX + 1
 	end
 	
 	NeighboringCell = OriginalGrid[CurrentY][CurrentX]
-	
-	--warn(StartY,StartX)
-	--warn(CurrentY, CurrentX)
-	--warn(Direction)
-	--warn(CurrentCell, NeighboringCell)
-	--warn(RecursiveData)
-	--print()
-	
-	if not CurrentCell or not NeighboringCell then
-		return RecursiveData
-	end
 
-	if CellsAreSame(CurrentCell, NeighboringCell) then
-		if Direction == "X" then
-			SizeX = SizeX + 1
-		elseif Direction == "Y" then
-			SizeY = SizeY + 1
-		end
-		
-		SetVisited(StartY, StartX, CurrentY, CurrentX)
-		
-		SizeX = math.min(SizeX, MaxX)
-		SizeY = math.min(SizeY, MaxY)
-		
-		local RecurseData = {
+	if not CurrentCell or not NeighboringCell then return RecursiveData end
+
+  local CellsSame = CellsAreSame(CurrentCell, NeighboringCell)
+
+local RecurseData = {
 			["SizeY"] = SizeY,
 			["SizeX"] = SizeX,
 			["XLimit"] = RecursiveData.XLimit,
 			["YLimit"] = RecursiveData.YLimit,
 			
 			["OriginalX"] = RecursiveData.OriginalX,
-		}
+      ["OriginalY"] = RecursiveData.OriginalY
+	}
+  
+	if CellsSame then
+		if Direction == "X" then
+			SizeX = SizeX + 1
+		elseif Direction == "Y" then
+			SizeY = SizeY + 1
+    end
 		
-		if not RecursiveData.OriginalX then -- Our first recursion
-			RecurseData["OriginalX"] = StartX
-		end
-	
-		return GreedyMesh(CurrentY, CurrentX, RecurseData)
+		SetVisited(StartY, StartX, CurrentY, CurrentX)
+		
+		SizeX = math.min(SizeX, MaxX)
+		SizeY = math.min(SizeY, MaxY)
+
+    RecurseData.SizeX = SizeX
+    RecurseData.SizeY = SizeY
 	else
-		local RecurseData = {
-			["SizeY"] = SizeY,
-			["SizeX"] = SizeX,
-			["XLimit"] = RecursiveData.XLimit,
-			["YLimit"] = RecursiveData.YLimit,
-
-			["OriginalX"] = RecursiveData.OriginalX,
-		}
-
     if Direction == "X" then
       RecurseData.XLimit = CurrentX - 1
     elseif Direction == 'Y' then
       RecurseData.YLimit = CurrentY - 1
     end
-		
-		if not RecursiveData.OriginalX then -- Our first recursion
-			RecurseData["OriginalX"] = StartX
-		end
-		
-		return GreedyMesh(CurrentY, CurrentX-1, RecurseData)
 	end
-end
+		
+		if not RecursiveData.OriginalX then
+			RecurseData["OriginalX"] = StartX
+      RecurseData["OriginalY"] = StartY
+		end
 
-local FinishedGreedyMeshing = false
-local XOffset = 1
-local YOffset = 1
+    if CellsSame then
+      return GreedyMesh(CurrentY, CurrentX, RecurseData)
+    else
+      return GreedyMesh(CurrentY, CurrentX-1, RecurseData)
+    end
+end
 
 local function PrintData(Data)
   for Index, Value in pairs(Data) do
