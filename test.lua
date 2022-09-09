@@ -1,6 +1,8 @@
 local GridX = 9
 local GridY = 9
 
+
+print(_VERSION)
 local function MakeGrid(Width, Height)
 	local TestGrid = {}
 
@@ -49,7 +51,7 @@ local function SetVisited(StartY,StartX,CurrentY,CurrentX)
 	Visited[StartY][StartX] = true
 end
 
-local function LimitXY()
+local function LimitXY() end
 
 local function GreedyMesh(StartY, StartX, RecursiveData)
 
@@ -73,6 +75,10 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 
 	local CurrentCell = OriginalGrid[CurrentY][CurrentX]
 	local NeighboringCell = nil
+
+  local function IsNextYLayerSafe()\
+
+  end
 	
 	if CurrentX + 1 > MaxX then
 		if OriginalGrid[CurrentY+1] then
@@ -88,7 +94,7 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 	end
 
 	if Direction == "X" then
-		CurrentX += 1
+		CurrentX = CurrentX + 1
 	end
 	
 	NeighboringCell = OriginalGrid[CurrentY][CurrentX]
@@ -106,9 +112,9 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 
 	if CellsAreSame(CurrentCell, NeighboringCell) then
 		if Direction == "X" then
-			SizeX += 1
+			SizeX = SizeX + 1
 		elseif Direction == "Y" then
-			SizeY += 1
+			SizeY = SizeY + 1
 		end
 		
 		SetVisited(StartY, StartX, CurrentY, CurrentX)
@@ -119,7 +125,6 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 		local RecurseData = {
 			["SizeY"] = SizeY,
 			["SizeX"] = SizeX,
-			["Recurse"] = if RecursiveData.Recurse then RecursiveData.Recurse + 1 else 1,
 			["XLimit"] = RecursiveData.XLimit,
 			["YLimit"] = RecursiveData.YLimit,
 			
@@ -136,7 +141,6 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 		local RecurseData = {
 			["SizeY"] = SizeY,
 			["SizeX"] = SizeX,
-			["Recurse"] = if RecursiveData.Recurse then RecursiveData.Recurse + 1 else 1,
 			["XLimit"] = CurrentX - 1,
 			["YLimit"] = RecursiveData.YLimit,
 
@@ -155,17 +159,27 @@ local FinishedGreedyMeshing = false
 local XOffset = 1
 local YOffset = 1
 
+local function PrintData(Data)
+  for Index, Value in pairs(Data) do
+    print("["..Index.."] = "..Value)
+  end
+end        
+
 OriginalGrid[3][5] = {0}
 
 PrintGrid(OriginalGrid)
 
 for Y = 1, GridY do
-	for X = 1, GridX do
-		if Visited[Y] and Visited[Y][X] then continue end
-		
-		local Data = GreedyMesh(Y,X)
-		
-		print(Y,X, Data)
+	for X = 1, GridX do  
+		if Visited[Y] and Visited[Y][X] then
+
+    else
+      local Data = GreedyMesh(Y,X)
+
+      print()
+		  print(Y,X)
+      PrintData(Data)
+    end
 	end
 end
 
