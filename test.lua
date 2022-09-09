@@ -51,7 +51,25 @@ local function SetVisited(StartY,StartX,CurrentY,CurrentX)
 	Visited[StartY][StartX] = true
 end
 
-local function LimitXY() end
+local function NextYLayerSafe(StartY, StartX, Cell1)
+    for CurrentX = StartX, GridX do
+      if Visited[StartY][CurrentX] then 
+        return false
+      end
+
+      if not CellsAreSame(Cell1, OriginalGrid[StartY][CurrentX]) then return false end
+
+      
+    end
+
+    return true
+end
+
+local function ClearVisitedXLayer(YLayer, StartX, EndX)
+  for CurrentX = StartX, EndX do
+    Visited[YLayer][EndX] = false
+  end
+end  
 
 local function GreedyMesh(StartY, StartX, RecursiveData)
 
@@ -75,10 +93,6 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 
 	local CurrentCell = OriginalGrid[CurrentY][CurrentX]
 	local NeighboringCell = nil
-
-  local function IsNextYLayerSafe()\
-
-  end
 	
 	if CurrentX + 1 > MaxX then
 		if OriginalGrid[CurrentY+1] then
@@ -95,6 +109,8 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 
 	if Direction == "X" then
 		CurrentX = CurrentX + 1
+  elseif Direction == "Y" then
+    
 	end
 	
 	NeighboringCell = OriginalGrid[CurrentY][CurrentX]
@@ -131,7 +147,6 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 			["OriginalX"] = RecursiveData.OriginalX,
 		}
 		
-		
 		if not RecursiveData.OriginalX then -- Our first recursion
 			RecurseData["OriginalX"] = StartX
 		end
@@ -141,11 +156,17 @@ local function GreedyMesh(StartY, StartX, RecursiveData)
 		local RecurseData = {
 			["SizeY"] = SizeY,
 			["SizeX"] = SizeX,
-			["XLimit"] = CurrentX - 1,
+			["XLimit"] = RecursiveData.XLimit,
 			["YLimit"] = RecursiveData.YLimit,
 
 			["OriginalX"] = RecursiveData.OriginalX,
 		}
+
+    if Direction == "X" then
+      RecurseData.XLimit = CurrentX - 1
+    elseif Direction == 'Y' then
+      RecurseData.YLimit = CurrentY - 1
+    end
 		
 		if not RecursiveData.OriginalX then -- Our first recursion
 			RecurseData["OriginalX"] = StartX
